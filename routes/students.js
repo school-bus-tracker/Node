@@ -1,72 +1,96 @@
-const express = require("express");
-const Joi = require("@hapi/joi");
+const express = require('express');
+const mongoose = require('mongoose');
+const {Student,validate} = require('../models/students');
 
 const router = express.Router();
 
-const students = [{
-    Id:1,
-    RollNumber: "1505042",
-    FirstName: "rishivikram",
-    LastName: "nandakumar",
-    Class: "tenth",
-    SchoolID:1,
-    LocationID:1,
-    BusID:1,
-    ParentID:1
+router.get("/",async (req,res)=>{
+    try{
+        const student = await Student.find();
+        res.send(student);
     }
-]
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
 
-router.get("/",(req,res)=>{
+router.post("/",async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
+
+        if(!mongoose.Types.ObjectId.isValid(req.body.LocationID)) return res.status(400).send("Invalid Location Id");
+        if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
+        if(!mongoose.Types.ObjectId.isValid(req.body.ParentID)) return res.status(400).send("Invalid Parent Id");
+        if(!mongoose.Types.ObjectId.isValid(req.body.BusID)) return res.status(400).send("Invalid Bus Id");
+
+        if(error) return res.status(400).send(error.details[0].message);
+
+        const student = new Student({
+            RollNumber: req.body.RollNumber,
+            FirstName: req.body.FirstName,
+            LastName: req.body.LastName,
+            Class: req.body.Class,
+            LocationID : req.body.LocationID,
+            SchoolID: req.body.SchoolID,
+            BusID: req.body.BusID,
+            ParentID: req.body.ParentID
+        });
+
+        const result = await student.save();
+
+        res.send(result);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
+
+router.get('/:id',async (req,res)=>{
+    try{
+        const student = await Student.findById(req.params.id);
+
+        if(!student) return res.status(400).send('No Student were found with the given id');
     
-    res.send(students);
+        res.send(student);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
 
-router.post("/",(req,res)=>{
-    const {error} = validateStudent(req.body);
+router.put('/:id',async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
 
-    if(error) return res.status(400).send(error.details[0].message);
-
-    res.send(req.body);
+        if(!mongoose.Types.ObjectId.isValid(req.body.LocationID)) return res.status(400).send("Invalid Location Id");
+        if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
+        if(!mongoose.Types.ObjectId.isValid(req.body.ParentID)) return res.status(400).send("Invalid Parent Id");
+        if(!mongoose.Types.ObjectId.isValid(req.body.BusID)) return res.status(400).send("Invalid Bus Id");
+    
+        if(error) return res.status(400).send(error.details[0].message);
+    
+        const student = await Student.findByIdAndUpdate(req.params.id,{
+            RollNumber: req.body.RollNumber,
+            FirstName: req.body.FirstName,
+            LastName: req.body.LastName,
+            Class: req.body.Class,
+            LocationID : req.body.LocationID,
+            SchoolID: req.body.SchoolID,
+            BusID: req.body.BusID,
+            ParentID: req.body.ParentID
+        },
+        {
+            new:true,
+            runValidators:true
+        });
+    
+        if(!student) return res.status(400).send('No Student were found with the given id');
+    
+        res.send(student);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
 
-router.get('/:id',(req,res)=>{
-    const student = students.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!student) return res.status(400).send('no student were found with the given id');
-
-    res.send(student);
-});
-
-router.put('/:id',(req,res)=>{
-    const {error} = validateStudent(req.body);
-
-    if(error) return res.status(400).send(error.details[0].message);
-
-    const student = students.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!student) return res.status(400).send('no student were found with the given id');
-
-    student.Id = req.body.Id
-    student.RollNumber= req.body.RollNumber
-    student.FirstName= req.body.FirstName
-    student.LastName= req.body.LastName
-    student.Class = req.body.Class
-    student.SchoolID = req.body.SchoolID
-    student.LocationID = req.body.LocationID
-    student.BusID = req.body.BusID
-    student.ParentID = req.body.ParentID
-
-    res.send(student);
-});
-
-function validateStudent(student){
-    const schema = Joi.object({
-        RollNumber: Joi.string().trim().required(),
-        FirstName: Joi.string().trim().min(5).max(60).required(),
-        LastName: Joi.string().trim().min(5).max(60).required(),
-        Class:Joi.string().trim().required()
-    });
-
-    return schema.validate(student);
-}
 module.exports = router;

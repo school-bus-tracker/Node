@@ -1,59 +1,77 @@
-const express = require("express");
-const Joi = require("@hapi/joi");
+const express = require('express');
+const mongoose = require('mongoose');
+const {Bus,validate} = require('../models/buses');
 
 const router = express.Router();
 
-const buses = [{
-    Id :1,
-    BusName: "A",
-    SchoolID :  1
+router.get("/",async (req,res)=>{
+    try{
+        const bus = await Bus.find();
+        res.send(bus);
     }
-]
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
 
-router.get("/",(req,res)=>{
+router.post("/",async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
+
+        if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
+        
+        if(error) return res.status(400).send(error.details[0].message);
+
+        const bus = new Bus({
+            BusName : req.body.BusName,
+            SchoolID :  req.body.SchoolID  
+        });
+
+        const result = await bus.save();
+
+        res.send(result);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
+
+router.get('/:id',async (req,res)=>{
+    try{
+        const bus = await Bus.findById(req.params.id);
+
+        if(!bus) return res.status(400).send('No Bus were found with the given id');
     
-    res.send(buses);
+        res.send(bus);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
 
-router.post("/",(req,res)=>{
-    const {error} = validateBus(req.body);
+router.put('/:id',async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
 
-    if(error) return res.status(400).send(error.details[0].message);
-
-    res.send(req.body);
+        if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
+    
+        if(error) return res.status(400).send(error.details[0].message);
+    
+        const bus = await Bus.findByIdAndUpdate(req.params.id,{
+            BusName : req.body.BusName,
+            SchoolID :  req.body.SchoolID  
+        },
+        {
+            new:true
+        });
+    
+        if(!bus) return res.status(400).send('No Bus were found with the given id');
+    
+        res.send(bus);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
-
-router.get('/:id',(req,res)=>{
-    const bus = buses.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!bus) return res.status(400).send('no bus were found with the given id');
-
-    res.send(bus);
-});
-
-router.put('/:id',(req,res)=>{
-    const {error} = validateBus(req.body);
-
-    if(error) return res.status(400).send(error.details[0].message);
-
-    const bus = buses.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!bus) return res.status(400).send('no bus were found with the given id');
-
-    bus.Id = req.body.Id
-    bus.BusName= req.body.BusName
-    bus.SchoolID = req.body.SchoolID
-
-    res.send(bus);
-});
-
-function validateBus(bus){
-    const schema = Joi.object({
-        BusName: Joi.string().trim().min(5).max(60).required()
-    });
-
-    return schema.validate(bus);
-}
-
 
 module.exports = router;

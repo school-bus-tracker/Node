@@ -1,64 +1,81 @@
-const express = require("express");
-const Joi = require("@hapi/joi");
+const express = require('express');
+const mongoose = require('mongoose');
+const {Location,validate} = require('../models/locations');
 
 const router = express.Router();
 
-const locations = [{
-    Id :1,
-    StopName : "aaa",
-    Longitude : 150, 
-    Latitude :   80,
-    BusID :  1
+router.get("/",async (req,res)=>{
+    try{
+        const location = await Location.find();
+        res.send(location);
     }
-]
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
 
-router.get("/",(req,res)=>{
+router.post("/",async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
+
+        if(!mongoose.Types.ObjectId.isValid(req.body.BusID)) return res.status(400).send("Invalid Bus Id");
+
+        if(error) return res.status(400).send(error.details[0].message);
+
+        const location = new Location({
+            StopName : req.body.StopName,
+            Latitude : req.body.Latitude, 
+            Longitude : req.body.Longitude ,
+            BusID :  req.body.BusID  
+        });
+
+        const result = await location.save();
+
+        res.send(result);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
+
+router.get('/:id',async (req,res)=>{
+    try{
+        const location = await Location.findById(req.params.id);
+
+        if(!location) return res.status(400).send('No Location were found with the given id');
     
-    res.send(locations);
+        res.send(location);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
 
-router.post("/",(req,res)=>{
-    const {error} = validateLocation(req.body);
+router.put('/:id',async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
 
-    if(error) return res.status(400).send(error.details[0].message);
-
-    res.send(req.body);
+        if(!mongoose.Types.ObjectId.isValid(req.body.BusID)) return res.status(400).send("Invalid Bus Id");
+    
+        if(error) return res.status(400).send(error.details[0].message);
+    
+        const location = await Location.findByIdAndUpdate(req.params.id,{
+            StopName : req.body.StopName,
+            Latitude : req.body.Latitude, 
+            Longitude : req.body.Longitude ,
+            BusID :  req.body.BusID  
+        },
+        {
+            new:true
+        });
+    
+        if(!location) return res.status(400).send('No Location were found with the given id');
+    
+        res.send(location);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
-
-router.get('/:id',(req,res)=>{
-    const location = locations.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!location) return res.status(400).send('no location were found with the given id');
-
-    res.send(location);
-});
-
-router.put('/:id',(req,res)=>{
-    const {error} = validateLocation(req.body);
-
-    if(error) return res.status(400).send(error.details[0].message);
-
-    const location = locations.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!location) return res.status(400).send('no location were found with the given id');
-
-    location.Id = req.body.Id
-    location.StopName= req.body.StopName
-    location.Longitude= req.body.Longitude
-    location.Latitude= req.body.Latitude
-    location.BusID = req.body.BusID
-
-    res.send(location);
-});
-
-function validateLocation(location){
-    const schema = Joi.object({
-        StopName: Joi.string().trim().min(5).max(60).required(),
-        Longitude: Joi.number().min(-180).max(180).required(),
-        Latitude: Joi.number().min(-90).max(90).required()
-    });
-
-    return schema.validate(location);
-}
 
 module.exports = router;
