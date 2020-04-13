@@ -1,66 +1,83 @@
-const express = require("express");
-const Joi = require("@hapi/joi");
+const express = require('express');
+const mongoose = require('mongoose');
+const {School,validate} = require('../models/schools');
 
 const router = express.Router();
 
-const schools = [{
-    Id :1,
-    Name : "aaa",
-    MobileNumber : "9791804850", 
-    Address :   "aaa,bbb,ccc",
-    Email_ID :  "rishi.vikram.1@gmail.com",
-    SuperUSerID:1
+router.get("/",async (req,res)=>{
+    try{
+        const school = await School.find();
+        res.send(school);
     }
-]
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
 
-router.get("/",(req,res)=>{
+router.post("/",async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
+
+        if(!mongoose.Types.ObjectId.isValid(req.body.SuperUserID)) return res.status(400).send("Invalid Super User Id");
+
+        if(error) return res.status(400).send(error.details[0].message);
+
+        const school = new School({
+            Name: req.body.Name,
+            MobileNumber: req.body.MobileNumber,
+            Address: req.body.Address,
+            EmailID: req.body.EmailID,
+            SuperUserID : req.body.SuperUserID,
+        });
+
+        const result = await school.save();
+
+        res.send(result);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+});
+
+router.get('/:id',async (req,res)=>{
+    try{
+        const school = await School.findById(req.params.id);
+
+        if(!school) return res.status(400).send('No School were found with the given id');
     
-    res.send(schools);
+        res.send(school);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
 
-router.post("/",(req,res)=>{
-    const {error} = validateSchool(req.body);
+router.put('/:id',async (req,res)=>{
+    try{
+        const {error} = validate(req.body);
 
-    if(error) return res.status(400).send(error.details[0].message);
-
-    res.send(req.body);
+        if(!mongoose.Types.ObjectId.isValid(req.body.SuperUserID)) return res.status(400).send("Invalid Super User Id");
+    
+        if(error) return res.status(400).send(error.details[0].message);
+    
+        const school = await School.findByIdAndUpdate(req.params.id,{
+            Name: req.body.Name,
+            MobileNumber: req.body.MobileNumber,
+            Address: req.body.Address,
+            EmailID: req.body.EmailID,
+            SuperUserID : req.body.SuperUserID,
+        },
+        {
+            new:true
+        });
+    
+        if(!school) return res.status(400).send('No School were found with the given id');
+    
+        res.send(school);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
 });
-
-router.get('/:id',(req,res)=>{
-    const school = schools.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!school) return res.status(400).send('no school were found with the given id');
-
-    res.send(school);
-});
-
-router.put('/:id',(req,res)=>{
-    const {error} = validateSchool(req.body);
-
-    if(error) return res.status(400).send(error.details[0].message);
-
-    const school = schools.find(p=>p.Id == parseInt(req.params.id));
-
-    if(!school) return res.status(400).send('no school were found with the given id');
-
-    school.Id = req.body.Id
-    school.Name= req.body.Name
-    school.MobileNumber= req.body.MobileNumber
-    school.Address= req.body.Address
-    school.Email_ID = req.body.Email_ID
-
-    res.send(school);
-});
-
-function validateSchool(school){    
-    const schema = Joi.object({
-        Name: Joi.string().trim().min(5).max(60).required(),
-        MobileNumber: Joi.string().trim().regex(/^[0-9]{10}$/).required(),
-        Address: Joi.string().trim().min(10).max(300).required(),
-        EmailID: Joi.string().trim().email().required()
-    });
-
-    return schema.validate(school);
-}
 
 module.exports = router;
