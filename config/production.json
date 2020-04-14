@@ -1,0 +1,5 @@
+{
+    "privateKey":"",
+    "superUserPassword":"",
+    "db":"mongodb://localhost/production"
+}

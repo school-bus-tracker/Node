@@ -1,12 +1,30 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const _ = require('lodash');
+const authParent = require('../middleware/authparents');
+const authDriver = require('../middleware/authdrivers');
+const authSchoolAdmin = require('../middleware/authschooladmins');
+const authSuperUser = require('../middleware/authsuperusers');
 const {Driver,validate} = require('../models/drivers');
 
 const router = express.Router();
 
-router.get("/",async (req,res)=>{
+
+router.get("/me",authDriver,async (req,res)=>{
     try{
-        const driver = await Driver.find();
+        const driver = await Driver.findById(req.driver._id).select('-Password');
+        res.send(driver);
+    }
+    catch(ex){
+        res.status(500).send(ex.message);
+    }
+   
+});
+
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
+    try{
+        const driver = await Driver.find().select('-Password');
         res.send(driver);
     }
     catch(ex){
@@ -14,7 +32,7 @@ router.get("/",async (req,res)=>{
     }
 });
 
-router.post("/",async (req,res)=>{
+router.post("/",[authSchoolAdmin,authSuperUser],async (req,res)=>{
     try{
         const {error} = validate(req.body);
 
@@ -24,11 +42,14 @@ router.post("/",async (req,res)=>{
 
         if(error) return res.status(400).send(error.details[0].message);
 
+        const salt = await bcrypt.genSalt(10);
+        const password = await bcrypt.hash(req.body.Password,salt);
+
         const driver = new Driver({
             EmailID: req.body.EmailID,
             FirstName: req.body.FirstName,
             LastName: req.body.LastName,
-            Password: req.body.Password,
+            Password: password,
             MobileNumber: req.body.MobileNumber,
             Address: req.body.Address,
             IsActive: req.body.IsActive,
@@ -39,7 +60,7 @@ router.post("/",async (req,res)=>{
 
         const result = await driver.save();
 
-        res.send(result);
+        res.send(_.omit(result,['Password']));
     }
     catch(ex){
         res.status(500).send(ex.message);
@@ -47,20 +68,20 @@ router.post("/",async (req,res)=>{
     
 });
 
-router.get('/:id',async (req,res)=>{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
     try{
         const driver = await Driver.findById(req.params.id);
 
         if(!driver) return res.status(400).send('No Driver were found with the given id');
     
-        res.send(driver);
+        res.send(_.omit(driver,['Password']));
     }
     catch(ex){
         res.status(500).send(ex.message);
     }
 });
 
-router.put('/:id',async (req,res)=>{
+router.put('/:id',[authSchoolAdmin,authSuperUser],async (req,res)=>{
     try{
         const {error} = validate(req.body);
 
@@ -70,11 +91,14 @@ router.put('/:id',async (req,res)=>{
     
         if(error) return res.status(400).send(error.details[0].message);
     
+        const salt = await bcrypt.genSalt(10);
+        const password = await bcrypt.hash(req.body.Password,salt);
+
         const driver = await Driver.findByIdAndUpdate(req.params.id,{
             EmailID: req.body.EmailID,
             FirstName: req.body.FirstName,
             LastName: req.body.LastName,
-            Password: req.body.Password,
+            Password: password,
             MobileNumber: req.body.MobileNumber,
             Address: req.body.Address,
             IsActive: req.body.IsActive,
@@ -88,7 +112,7 @@ router.put('/:id',async (req,res)=>{
     
         if(!driver) return res.status(400).send('No Driver were found with the given id');
     
-        res.send(driver);
+        res.send(_.omit(driver,['Password']));
     }
     catch(ex){
         res.status(500).send(ex.message);
