@@ -1,7 +1,9 @@
 const Joi = require('@hapi/joi');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 const mongoose = require('mongoose');
 
-const Parent = mongoose.model("Parents",new mongoose.Schema({
+const parentSchema = new mongoose.Schema({
     EmailID:{
         type:String,
         maxlength:30,
@@ -25,7 +27,7 @@ const Parent = mongoose.model("Parents",new mongoose.Schema({
     Password:{
         type:String,
         minlength:8,
-        maxlength:32,
+        maxlength:1024,
         required:true
     },
     MobileNumber:{
@@ -49,7 +51,14 @@ const Parent = mongoose.model("Parents",new mongoose.Schema({
         required:true
     }
 
-}));
+});
+
+parentSchema.methods.generateAuthToken = function (){
+    const token = jwt.sign({_id:this._id},config.get('privateKey'));
+    return token;
+};
+
+const Parent = mongoose.model("Parents",parentSchema);
 
 
 function validateParent(parent){
@@ -57,7 +66,7 @@ function validateParent(parent){
         EmailID: Joi.string().trim().max(30).email().required(),
         FirstName: Joi.string().trim().min(5).max(60).required(),
         LastName: Joi.string().trim().min(5).max(60).required(),
-        Password: Joi.string().trim().min(8).max(32).alphanum().required(),
+        Password: Joi.string().trim().min(8).max(1024).alphanum().required(),
         MobileNumber: Joi.string().trim().regex(/^[0-9]{10}$/).required(),
         Address: Joi.string().trim().min(10).max(300).required(),
         IsActive: Joi.bool().required(),

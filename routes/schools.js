@@ -1,10 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const authParent = require('../middleware/authparents');
+const authDriver = require('../middleware/authdrivers');
+const authSchoolAdmin = require('../middleware/authschooladmins');
+const authSuperUser = require('../middleware/authsuperusers');
 const {School,validate} = require('../models/schools');
 
 const router = express.Router();
 
-router.get("/",async (req,res)=>{
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
     try{
         const school = await School.find();
         res.send(school);
@@ -14,7 +18,7 @@ router.get("/",async (req,res)=>{
     }
 });
 
-router.post("/",async (req,res)=>{
+router.post("/",authSuperUser,async (req,res)=>{
     try{
         const {error} = validate(req.body);
 
@@ -39,7 +43,7 @@ router.post("/",async (req,res)=>{
     }
 });
 
-router.get('/:id',async (req,res)=>{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
     try{
         const school = await School.findById(req.params.id);
 
@@ -52,7 +56,7 @@ router.get('/:id',async (req,res)=>{
     }
 });
 
-router.put('/:id',async (req,res)=>{
+router.put('/:id',authSuperUser,async (req,res)=>{
     try{
         const {error} = validate(req.body);
 
