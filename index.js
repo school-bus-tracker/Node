@@ -1,4 +1,5 @@
 const express = require('express');
+const winston = require('winston');
 
 const app = express();
 
@@ -10,4 +11,4 @@ require('./initializers/dbinitializer')();
 require('./initializers/productioninitializer')(app);
 const port = process.env.PORT || 3000;
 
-app.listen(port,()=>console.log(`Listening at port ${port}`));
+app.listen(port,()=>winston.info(`Listening at port ${port}`));

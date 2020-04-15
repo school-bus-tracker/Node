@@ -1,4 +1,6 @@
 {
     "privateKey":"privateKey",
-    "superUserPassword":"superUserPassword"
+    "superUserPassword":"superUserPassword",
+    "dbUser":"dbUser",
+    "dbPassword":"dbPassword"
 }

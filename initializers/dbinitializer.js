@@ -8,6 +8,6 @@ module.exports = function(){
     mongoose.set('useUnifiedTopology', true);
     mongoose.set('useFindAndModify', false);
 
-    mongoose.connect(config.get('db'))
+    mongoose.connect(`mongodb+srv://${config.get('dbUser')}:${config.get('dbPassword')}@cluster0-jmome.mongodb.net/${config.get('db')}`)
             .then(()=>winston.info('Connected to mongodb ....'))
 }
