@@ -8,18 +8,12 @@ const {DailyAttendance,validate} = require('../models/dailyattendances');
 
 const router = express.Router();
 
-router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const dailyAttendance = await DailyAttendance.find();
         res.send(dailyAttendance);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.post("/",[authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.post("/",[authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.DriverID)) return res.status(400).send("Invalid Driver Id");
@@ -39,27 +33,17 @@ router.post("/",[authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
         const result = await dailyAttendance.save();
 
         res.send(result);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const dailyAttendance = await DailyAttendance.findById(req.params.id);
 
         if(!dailyAttendance) return res.status(400).send('No DailyAttendance were found with the given id');
     
         res.send(dailyAttendance);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.put('/:id',[authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.put('/:id',[authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.DriverID)) return res.status(400).send("Invalid Driver Id");
@@ -83,10 +67,6 @@ router.put('/:id',[authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
         if(!dailyAttendance) return res.status(400).send('No Daily Attendance were found with the given id');
     
         res.send(dailyAttendance);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
 module.exports = router;

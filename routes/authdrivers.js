@@ -6,8 +6,7 @@ const {Driver} = require('../models/drivers');
 const router = express.Router();
 
 
-router.post("/",async(req,res)=>{
-    try{
+router.post("/", async(req,res)=>{
         const {error} = validate(req.body);
 
         if(error) return res.status(400).send(error.details[0].message);
@@ -19,12 +18,7 @@ router.post("/",async(req,res)=>{
         if(!validPassword) return res.status(400).send('Invalid Email or Password');
 
         const token = driver.generateAuthToken();
-        res.send(token);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
-    
+        res.send(token); 
 });
 
 function validate(driver){

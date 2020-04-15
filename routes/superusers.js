@@ -7,29 +7,17 @@ const {SuperUser,validate} = require('../models/superusers');
 
 const router = express.Router();
 
-router.get("/me",authSuperUser,async (req,res)=>{
-    try{
+router.get("/me",authSuperUser, async (req,res)=>{
         const superUser = await SuperUser.findById(req.superUser._id).select('-Password');
         res.send(superUser);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
-   
 });
 
-router.get("/",authSuperUser,async (req,res)=>{
-    try{
+router.get("/",authSuperUser, async (req,res)=>{
         const superUser = await SuperUser.find().select('-Password');
         res.send(superUser);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.post("/",authSuperUser,async (req,res)=>{
-    try{
+router.post("/",authSuperUser, async (req,res)=>{
         const {error} = validate(req.body);
 
         if(error) return res.status(400).send(error.details[0].message);
@@ -48,27 +36,17 @@ router.post("/",authSuperUser,async (req,res)=>{
         const result = await superUser.save();
 
         res.send(_.omit(result,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.get('/:id',authSuperUser,async (req,res)=>{
-    try{
+router.get('/:id',authSuperUser, async (req,res)=>{
         const superUser = await SuperUser.findById(req.params.id);
 
         if(!superUser) return res.status(400).send('No SuperUser were found with the given id');
     
         res.send(_.omit(superUser,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.put('/:id',authSuperUser,async (req,res)=>{
-    try{
+router.put('/:id',authSuperUser, async (req,res)=>{
         const {error} = validate(req.body);
     
         if(error) return res.status(400).send(error.details[0].message);
@@ -90,10 +68,6 @@ router.put('/:id',authSuperUser,async (req,res)=>{
         if(!superUser) return res.status(400).send('No SuperUser were found with the given id');
     
         res.send(_.omit(superUser,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
     
 });
 

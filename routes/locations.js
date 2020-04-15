@@ -8,18 +8,12 @@ const {Location,validate} = require('../models/locations');
 
 const router = express.Router();
 
-router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const location = await Location.find();
         res.send(location);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.post("/",[authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.post("/",[authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.BusID)) return res.status(400).send("Invalid Bus Id");
@@ -36,27 +30,17 @@ router.post("/",[authSchoolAdmin,authSuperUser],async (req,res)=>{
         const result = await location.save();
 
         res.send(result);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const location = await Location.findById(req.params.id);
 
         if(!location) return res.status(400).send('No Location were found with the given id');
     
         res.send(location);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.put('/:id',[authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.put('/:id',[authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.BusID)) return res.status(400).send("Invalid Bus Id");
@@ -76,10 +60,6 @@ router.put('/:id',[authSchoolAdmin,authSuperUser],async (req,res)=>{
         if(!location) return res.status(400).send('No Location were found with the given id');
     
         res.send(location);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
 module.exports = router;

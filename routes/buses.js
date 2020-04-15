@@ -8,18 +8,12 @@ const {Bus,validate} = require('../models/buses');
 
 const router = express.Router();
 
-router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const bus = await Bus.find();
         res.send(bus);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.post("/",[authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.post("/",[authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
@@ -34,27 +28,17 @@ router.post("/",[authSchoolAdmin,authSuperUser],async (req,res)=>{
         const result = await bus.save();
 
         res.send(result);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const bus = await Bus.findById(req.params.id);
 
         if(!bus) return res.status(400).send('No Bus were found with the given id');
     
         res.send(bus);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.put('/:id',[authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.put('/:id',[authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
@@ -72,10 +56,6 @@ router.put('/:id',[authSchoolAdmin,authSuperUser],async (req,res)=>{
         if(!bus) return res.status(400).send('No Bus were found with the given id');
     
         res.send(bus);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
 module.exports = router;

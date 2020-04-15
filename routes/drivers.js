@@ -11,29 +11,17 @@ const {Driver,validate} = require('../models/drivers');
 const router = express.Router();
 
 
-router.get("/me",authDriver,async (req,res)=>{
-    try{
+router.get("/me",authDriver, async (req,res)=>{
         const driver = await Driver.findById(req.driver._id).select('-Password');
         res.send(driver);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
-   
 });
 
-router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const driver = await Driver.find().select('-Password');
         res.send(driver);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.post("/",[authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.post("/",[authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SchoolAdminID)) return res.status(400).send("Invalid School Admin Id");
@@ -61,28 +49,17 @@ router.post("/",[authSchoolAdmin,authSuperUser],async (req,res)=>{
         const result = await driver.save();
 
         res.send(_.omit(result,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
-    
 });
 
-router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const driver = await Driver.findById(req.params.id);
 
         if(!driver) return res.status(400).send('No Driver were found with the given id');
     
         res.send(_.omit(driver,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.put('/:id',[authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.put('/:id',[authSchoolAdmin,authSuperUser], async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SchoolAdminID)) return res.status(400).send("Invalid School Admin Id");
@@ -113,10 +90,6 @@ router.put('/:id',[authSchoolAdmin,authSuperUser],async (req,res)=>{
         if(!driver) return res.status(400).send('No Driver were found with the given id');
     
         res.send(_.omit(driver,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
 module.exports = router;
