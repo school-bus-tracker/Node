@@ -11,29 +11,17 @@ const {SchoolAdmin,validate} = require('../models/schooladmins');
 const router = express.Router();
 
 
-router.get("/me",authSchoolAdmin,async (req,res)=>{
-    try{
+router.get("/me",authSchoolAdmin, async (req,res)=>{
         const schoolAdmin = await SchoolAdmin.findById(req.schoolAdmin._id).select('-Password');
         res.send(schoolAdmin);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
-   
 });
 
-router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const schoolAdmin = await SchoolAdmin.find().select('-Password');
         res.send(schoolAdmin);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.post("/",authSuperUser,async (req,res)=>{
-    try{
+router.post("/",authSuperUser, async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
@@ -60,27 +48,17 @@ router.post("/",authSuperUser,async (req,res)=>{
         const result = await schoolAdmin.save();
 
         res.send(_.omit(result,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const schoolAdmin = await SchoolAdmin.findById(req.params.id);
 
         if(!schoolAdmin) return res.status(400).send('No SchoolAdmin were found with the given id');
     
         res.send(_.omit(schoolAdmin,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.put('/:id',authSuperUser,async (req,res)=>{
-    try{
+router.put('/:id',authSuperUser, async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SchoolID)) return res.status(400).send("Invalid School Id");
@@ -110,10 +88,6 @@ router.put('/:id',authSuperUser,async (req,res)=>{
         if(!schoolAdmin) return res.status(400).send('No School Admin were found with the given id');
     
         res.send(_.omit(schoolAdmin,['Password']));
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
 module.exports = router;

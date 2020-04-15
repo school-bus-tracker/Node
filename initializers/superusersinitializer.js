@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 
 module.exports = async ()=>{
     try{
+        await SuperUser.deleteMany({});
+
         const salt = await bcrypt.genSalt(10);
         const password = await bcrypt.hash(config.get('superUserPassword'),salt);
 
@@ -12,7 +14,7 @@ module.exports = async ()=>{
             FirstName: 'superuser',
             LastName: 'untitled',
             Password: password,
-            MobileNumber: '9791804850',
+            MobileNumber: '1234567891',
         });
         
         await superUser.save();

@@ -8,18 +8,12 @@ const {School,validate} = require('../models/schools');
 
 const router = express.Router();
 
-router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get("/",[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const school = await School.find();
         res.send(school);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.post("/",authSuperUser,async (req,res)=>{
-    try{
+router.post("/",authSuperUser, async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SuperUserID)) return res.status(400).send("Invalid Super User Id");
@@ -37,27 +31,17 @@ router.post("/",authSuperUser,async (req,res)=>{
         const result = await school.save();
 
         res.send(result);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser],async (req,res)=>{
-    try{
+router.get('/:id',[authParent,authDriver,authSchoolAdmin,authSuperUser], async (req,res)=>{
         const school = await School.findById(req.params.id);
 
         if(!school) return res.status(400).send('No School were found with the given id');
     
         res.send(school);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
-router.put('/:id',authSuperUser,async (req,res)=>{
-    try{
+router.put('/:id',authSuperUser, async (req,res)=>{
         const {error} = validate(req.body);
 
         if(!mongoose.Types.ObjectId.isValid(req.body.SuperUserID)) return res.status(400).send("Invalid Super User Id");
@@ -78,10 +62,6 @@ router.put('/:id',authSuperUser,async (req,res)=>{
         if(!school) return res.status(400).send('No School were found with the given id');
     
         res.send(school);
-    }
-    catch(ex){
-        res.status(500).send(ex.message);
-    }
 });
 
 module.exports = router;
