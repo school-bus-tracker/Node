@@ -4,10 +4,10 @@
 ### End points
 | User Auth |   URL |
 |-----------|--------|
-| SuperUser | {root}/api/authsuperusers|
-| Admin | {root}/api/authschoolsadmins|
-| Drivers | {root}/api/authdrivers|
-| Parents | {root}/api/authparents|
+| SuperUser | {host}/api/authsuperusers|
+| Admin | {host}/api/authschoolsadmins|
+| Drivers | {host}/api/authdrivers|
+| Parents | {host}/api/authparents|
 
 ### Requset JSON Data
 ```
@@ -20,7 +20,7 @@ Example
 ```
 curl 
     --request POST 
-    --url http://{root}/api/authsuperusers/ 
+    --url http://{host}/api/authsuperusers/ 
     --header 'cache-control: no-cache' 
     --header 'content-type: application/json' 
     --data '{"EmailID": " ",Password":" "}'
@@ -30,11 +30,11 @@ curl
 
 | Data |   URL |
 |-----------|--------|
-| SuperUser | {root}/api/superusers|
-| Admin | {root}/api/schoolsadmins|
-| Drivers | {root}/api/drivers|
-| Parents | {root}/api/parents|
-| Buses | {root}/api/buses|
-| Location | {root}/api/locations|
-| Bus Routes | {root}/api/busroutes|
-| Daily Attendance | {root}/api/dailyattendances|
+| SuperUser | {host}/api/superusers|
+| Admin | {host}/api/schoolsadmins|
+| Drivers | {host}/api/drivers|
+| Parents | {host}/api/parents|
+| Buses | {host}/api/buses|
+| Location | {host}/api/locations|
+| Bus Routes | {host}/api/busroutes|
+| Daily Attendance | {host}/api/dailyattendances|
