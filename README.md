@@ -5,11 +5,11 @@
 | User Auth |   URL |
 |-----------|--------|
 | SuperUser | {host}/api/authsuperusers|
-| Admin | {host}/api/authschoolsadmins|
+| Admin | {host}/api/authschooladmins|
 | Drivers | {host}/api/authdrivers|
 | Parents | {host}/api/authparents|
 
-### Requset JSON Data
+### Request JSON Data
 ```
 {
   "EmailID": " ",
@@ -31,7 +31,7 @@ curl
 | Data |   URL |
 |-----------|--------|
 | SuperUser | {host}/api/superusers|
-| Admin | {host}/api/schoolsadmins|
+| Admin | {host}/api/schooladmins|
 | Drivers | {host}/api/drivers|
 | Parents | {host}/api/parents|
 | Buses | {host}/api/buses|
