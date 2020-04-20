@@ -9,11 +9,20 @@
 | Drivers | {host}/api/authdrivers|
 | Parents | {host}/api/authparents|
 
+### Access Level for Entities
+| Entity | Access Level |
+|--------|--------------|
+| SuperUser | Everything |
+| SchoolAdmin | Everything except superuser | 
+| Driver| parent and driver and all other GET request and dailyattendance All requests |
+| Parent | parent and driver and all other GET request|
+
 ### Request JSON Data
 ```
 {
   "EmailID": " ",
-   "Password":" "
+   "Password":" ",
+   <Entity-confirmation>
 }
 ```
 Example
@@ -23,7 +32,7 @@ curl
     --url http://{host}/api/authsuperusers/ 
     --header 'cache-control: no-cache' 
     --header 'content-type: application/json' 
-    --data '{"EmailID": " ",Password":" "}'
+    --data '{"EmailID": " ",Password":" ", "isSuperUser" : true}'
 ```
 
 ## GET Endpoints
