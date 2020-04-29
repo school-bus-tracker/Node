@@ -8,7 +8,6 @@ app.use(cors());
 
 require("./initializers/loginitializer")();
 require("./initializers/configinitializer")();
-require("./initializers/superusersinitializer")();
 require("./initializers/routesinitializer")(app);
 require("./initializers/dbinitializer")();
 require("./initializers/productioninitializer")(app);

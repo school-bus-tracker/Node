@@ -4,9 +4,13 @@ const authParent = require("../middleware/authparents");
 const authDriver = require("../middleware/authdrivers");
 const authSchoolAdmin = require("../middleware/authschooladmins");
 const authSuperUser = require("../middleware/authsuperusers");
-const { Student, validate } = require("../models/students");
+const { Student, validate, studentClass } = require("../models/students");
 
 const router = express.Router();
+
+router.get("/class", [authParent], (req, res) => {
+  res.send(studentClass);
+});
 
 router.get("/", [authParent], async (req, res) => {
   const student = await Student.find();
