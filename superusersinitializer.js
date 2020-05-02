@@ -2,10 +2,12 @@ const { SuperUser, validate } = require("./models/superusers");
 const config = require("config");
 const bcrypt = require("bcrypt");
 
-module.exports = async () => {
-  try {
-    await SuperUser.deleteMany({});
+require("./initializers/loginitializer")();
+require("./initializers/configinitializer")();
+require("./initializers/dbinitializer")();
 
+async function execute() {
+  try {
     if (!config.get("superUserPassword")) {
       throw new Error("FATAL ERROR-> db has not been set");
     }
@@ -22,7 +24,11 @@ module.exports = async () => {
     });
 
     await superUser.save();
+    console.log("Created SuperUser Successfully....");
+    process.exit(0);
   } catch (ex) {
     throw new Error(ex);
   }
-};
+}
+
+execute();
