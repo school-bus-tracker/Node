@@ -31,8 +31,8 @@ const School = mongoose.model(
       unique: true,
     },
     IsActive: {
-      type: Boolean,
-      default: true,
+      type: String,
+      default: "true",
     },
     SuperUserID: {
       type: mongoose.Schema.Types.ObjectId,
