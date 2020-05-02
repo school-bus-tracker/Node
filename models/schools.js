@@ -20,7 +20,7 @@ const School = mongoose.model(
     Address: {
       type: String,
       minlength: 10,
-      maxlength: 30,
+      maxlength: 200,
       required: true,
     },
     EmailID: {
@@ -49,7 +49,7 @@ function validateSchool(school) {
       .trim()
       .regex(/^[0-9]{10}$/)
       .required(),
-    Address: Joi.string().trim().min(10).max(300).required(),
+    Address: Joi.string().trim().min(10).max(200).required(),
     EmailID: Joi.string().trim().max(30).email().required(),
     SuperUserID: Joi.string().trim().required(),
   });
