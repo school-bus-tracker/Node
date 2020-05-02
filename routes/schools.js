@@ -26,6 +26,7 @@ router.post("/", authSuperUser, async (req, res) => {
     MobileNumber: req.body.MobileNumber,
     Address: req.body.Address,
     EmailID: req.body.EmailID,
+    IsActive: true,
     SuperUserID: req.body.SuperUserID,
   });
 
