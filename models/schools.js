@@ -51,6 +51,7 @@ function validateSchool(school) {
       .required(),
     Address: Joi.string().trim().min(10).max(200).required(),
     EmailID: Joi.string().trim().max(30).email().required(),
+    IsActive: Joi.bool().required(),
     SuperUserID: Joi.string().trim().required(),
   });
 
