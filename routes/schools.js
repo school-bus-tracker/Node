@@ -14,13 +14,6 @@ router.get("/", [authParent], async (req, res) => {
 });
 
 router.post("/", authSuperUser, async (req, res) => {
-  const { error } = validate(req.body);
-
-  if (!mongoose.Types.ObjectId.isValid(req.body.SuperUserID))
-    return res.status(400).send("Invalid Super User Id");
-
-  if (error) return res.status(400).send(error.details[0].message);
-
   const school = new School({
     Name: req.body.Name,
     MobileNumber: req.body.MobileNumber,
@@ -29,6 +22,13 @@ router.post("/", authSuperUser, async (req, res) => {
     IsActive: true,
     SuperUserID: req.body.SuperUserID,
   });
+
+  const { error } = validate(school);
+
+  if (!mongoose.Types.ObjectId.isValid(req.body.SuperUserID))
+    return res.status(400).send("Invalid Super User Id");
+
+  if (error) return res.status(400).send(error.details[0].message);
 
   const result = await school.save();
 
@@ -59,6 +59,7 @@ router.put("/:id", authSuperUser, async (req, res) => {
       MobileNumber: req.body.MobileNumber,
       Address: req.body.Address,
       EmailID: req.body.EmailID,
+      IsActive: req.body.IsActive,
       SuperUserID: req.body.SuperUserID,
     },
     {
