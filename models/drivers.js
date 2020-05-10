@@ -43,6 +43,7 @@ const driverSchema = new mongoose.Schema({
   },
   IsActive: {
     type: Boolean,
+    default: true,
     required: true,
   },
   SchoolAdminID: {
