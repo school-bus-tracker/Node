@@ -21,6 +21,7 @@ router.get("/", [authParent], async (req, res) => {
 });
 
 router.post("/", [authSchoolAdmin], async (req, res) => {
+  req.body.IsActive = true;
   const { error } = validate(req.body);
 
   if (!mongoose.Types.ObjectId.isValid(req.body.SchoolAdminID))
