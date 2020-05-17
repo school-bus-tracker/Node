@@ -10,8 +10,8 @@ const { Driver, validate } = require("../models/drivers");
 
 const router = express.Router();
 
-router.get("/me", authDriver, async (req, res) => {
-  const driver = await Driver.findOne({ EmailID: req.body.EmailID }).select(
+router.get("/me/:userName", authDriver, async (req, res) => {
+  const driver = await Driver.findOne({ EmailID: req.params.userName }).select(
     "-Password"
   );
   res.send(driver);
