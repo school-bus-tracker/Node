@@ -8,7 +8,12 @@ async function AuthDriver(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, config.get("privateKey"));
-    if (decoded.isDriver || decoded.isSchoolAdmin || decoded.isSuperUser) {
+    if (
+      decoded.isParent ||
+      decoded.isDriver ||
+      decoded.isSchoolAdmin ||
+      decoded.isSuperUser
+    ) {
       req.driver = decoded;
       next();
     } else return res.status(401).send("Access denied");
