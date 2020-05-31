@@ -10,6 +10,13 @@ const { Parent, validate } = require("../models/parents");
 
 const router = express.Router();
 
+router.get("/me/:userName", authParent, async (req, res) => {
+  const parent = await Parent.findOne({ EmailID: req.params.userName }).select(
+    "-Password"
+  );
+  res.send(parent);
+});
+
 router.get("/me", authParent, async (req, res) => {
   const parent = await Parent.findById(req.parent._id).select("-Password");
   res.send(parent);
