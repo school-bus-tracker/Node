@@ -41,6 +41,7 @@ router.post("/", [authSchoolAdmin], async (req, res) => {
     Address: req.body.Address,
     IsActive: req.body.IsActive,
     SchoolAdminID: req.body.SchoolAdminID,
+    DriverID: req.body.DriverID,
   });
   const result = await parent.save();
 
@@ -78,6 +79,7 @@ router.put("/:id", [authSchoolAdmin], async (req, res) => {
       Address: req.body.Address,
       IsActive: req.body.IsActive,
       SchoolAdminID: req.body.AdminID,
+      DriverID: req.body.DriverID,
     },
     {
       new: true,

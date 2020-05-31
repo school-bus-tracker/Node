@@ -51,6 +51,11 @@ const parentSchema = new mongoose.Schema({
     ref: "SchoolAdmins",
     required: true,
   },
+  DriverID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Drivers",
+    required: true,
+  },
 });
 
 parentSchema.methods.generateAuthToken = function (isParent) {
@@ -73,6 +78,7 @@ function validateParent(parent) {
     Address: Joi.string().trim().min(10).max(200).required(),
     IsActive: Joi.bool().required(),
     SchoolAdminID: Joi.string().trim().required(),
+    DriverID: Joi.string().trim().required(),
   });
 
   return schema.validate(parent);
